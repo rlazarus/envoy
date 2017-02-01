@@ -1,6 +1,7 @@
 #include "sds.h"
 
 #include "common/http/headers.h"
+#include "common/network/address_impl.h"
 #include "common/network/utility.h"
 
 namespace Upstream {
@@ -29,7 +30,7 @@ void SdsClusterImpl::parseResponse(const Http::Message& response) {
     }
 
     new_hosts.emplace_back(new HostImpl(
-        info_, Network::Utility::urlForTcp(host->getString("ip_address"), host->getInteger("port")),
+        info_, Network::Address::InstancePtr{new Network::Address::IpInstance(host->getString("ip_address"), host->getInteger("port"))},
         canary, weight, zone));
   }
 

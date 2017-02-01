@@ -11,14 +11,15 @@
 namespace Stats {
 namespace Statsd {
 
-Writer::Writer(uint32_t port) {
-  Network::AddrInfoPtr resolved(Network::Utility::resolveTCP("", port));
+Writer::Writer(uint32_t ) {
+  /*Network::AddrInfoPtr resolved(Network::Utility::resolveTCP("", port));
   fd_ = socket(AF_INET, SOCK_DGRAM, 0);
   ASSERT(fd_ != -1);
 
   int rc = connect(fd_, resolved->ai_addr, resolved->ai_addrlen);
   ASSERT(rc != -1);
-  UNREFERENCED_PARAMETER(rc);
+  UNREFERENCED_PARAMETER(rc);*/
+  ASSERT(false);
 }
 
 Writer::~Writer() { close(fd_); }

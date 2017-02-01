@@ -51,8 +51,8 @@ IpList::IpList(const std::vector<std::string>& subnets) {
   }
 }
 
-bool IpList::contains(const std::string& remote_address) const {
-  in_addr addr;
+bool IpList::contains(const Address::Instance&) const {
+  /*in_addr addr;
   int rc = inet_pton(AF_INET, remote_address.c_str(), &addr);
   if (1 != rc) {
     return false;
@@ -62,7 +62,8 @@ bool IpList::contains(const std::string& remote_address) const {
     if ((ntohl(addr.s_addr) & entry.ipv4_mask_) == entry.ipv4_address_) {
       return true;
     }
-  }
+  }*/
+  ASSERT(false);
 
   return false;
 }
@@ -71,10 +72,10 @@ IpList::IpList(const Json::Object& config, const std::string& member_name)
     : IpList(config.hasObject(member_name) ? config.getStringArray(member_name)
                                            : std::vector<std::string>()) {}
 
-const std::string Utility::TCP_SCHEME = "tcp://";
-const std::string Utility::UNIX_SCHEME = "unix://";
+// const std::string Utility::TCP_SCHEME = "tcp://";
+// const std::string Utility::UNIX_SCHEME = "unix://";
 
-AddrInfoPtr Utility::resolveTCP(const std::string& host, uint32_t port) {
+/*AddrInfoPtr Utility::resolveTCP(const std::string& host, uint32_t port) {
   addrinfo addrinfo_hints;
   memset(&addrinfo_hints, 0, sizeof(addrinfo_hints));
   addrinfo_hints.ai_family = AF_INET;
@@ -96,17 +97,17 @@ AddrInfoPtr Utility::resolveTCP(const std::string& host, uint32_t port) {
   }
 
   return AddrInfoPtr{addrinfo_out};
-}
+}*/
 
-sockaddr_un Utility::resolveUnixDomainSocket(const std::string& path) {
+/*sockaddr_un Utility::resolveUnixDomainSocket(const std::string& path) {
   sockaddr_un address;
   memset(&address, 0, sizeof(address));
   address.sun_family = AF_UNIX;
   StringUtil::strlcpy(&address.sun_path[0], path.c_str(), sizeof(address.sun_path));
   return address;
-}
+}*/
 
-void Utility::resolve(const std::string& url) {
+/*void Utility::resolve(const std::string& url) {
   if (url.find(TCP_SCHEME) == 0) {
     resolveTCP(hostFromUrl(url), portFromUrl(url));
   } else if (url.find(UNIX_SCHEME) == 0) {
@@ -114,9 +115,9 @@ void Utility::resolve(const std::string& url) {
   } else {
     throw EnvoyException(fmt::format("unknown protocol scheme: {}", url));
   }
-}
+}*/
 
-std::string Utility::hostFromUrl(const std::string& url) {
+/*std::string Utility::hostFromUrl(const std::string& url) {
   if (url.find(TCP_SCHEME) != 0) {
     throw EnvoyException(fmt::format("unknown protocol scheme: {}", url));
   }
@@ -128,9 +129,9 @@ std::string Utility::hostFromUrl(const std::string& url) {
   }
 
   return url.substr(TCP_SCHEME.size(), colon_index - TCP_SCHEME.size());
-}
+}*/
 
-uint32_t Utility::portFromUrl(const std::string& url) {
+/*uint32_t Utility::portFromUrl(const std::string& url) {
   if (url.find(TCP_SCHEME) != 0) {
     throw EnvoyException(fmt::format("unknown protocol scheme: {}", url));
   }
@@ -146,21 +147,21 @@ uint32_t Utility::portFromUrl(const std::string& url) {
   } catch (const std::invalid_argument& e) {
     throw EnvoyException(e.what());
   }
-}
+}*/
 
-std::string Utility::pathFromUrl(const std::string& url) {
+/*std::string Utility::pathFromUrl(const std::string& url) {
   if (url.find(UNIX_SCHEME) != 0) {
     throw EnvoyException(fmt::format("unknown protocol scheme: {}", url));
   }
 
   return url.substr(UNIX_SCHEME.size());
-}
+}*/
 
-std::string Utility::urlForTcp(const std::string& address, uint32_t port) {
+/*std::string Utility::urlForTcp(const std::string& address, uint32_t port) {
   return fmt::format("{}{}:{}", TCP_SCHEME, address, port);
-}
+}*/
 
-std::string Utility::getLocalAddress() {
+/*std::string Utility::getLocalAddress() {
   struct ifaddrs* ifaddr;
   struct ifaddrs* ifa;
   std::string ret;
@@ -189,15 +190,15 @@ std::string Utility::getLocalAddress() {
   }
 
   return ret;
-}
+}*/
 
-std::string Utility::getAddressName(sockaddr_in* addr) {
+/*std::string Utility::getAddressName(sockaddr_in* addr) {
   char str[INET_ADDRSTRLEN];
   inet_ntop(AF_INET, &addr->sin_addr, str, INET_ADDRSTRLEN);
   return std::string(str);
-}
+}*/
 
-uint16_t Utility::getAddressPort(sockaddr_in* addr) { return ntohs(addr->sin_port); }
+// uint16_t Utility::getAddressPort(sockaddr_in* addr) { return ntohs(addr->sin_port); }
 
 bool Utility::isInternalAddress(const char* address) {
   in_addr addr;
@@ -217,21 +218,23 @@ bool Utility::isInternalAddress(const char* address) {
   return false;
 }
 
-bool Utility::isLoopbackAddress(const char* address) {
-  in_addr addr;
+bool Utility::isLoopbackAddress(const Address::Instance&) {
+  ASSERT(false);
+  /*in_addr addr;
   int rc = inet_pton(AF_INET, address, &addr);
   if (1 != rc) {
     return false;
   }
 
-  return addr.s_addr == htonl(INADDR_LOOPBACK);
+  return addr.s_addr == htonl(INADDR_LOOPBACK);*/
 }
 
-bool Utility::getOriginalDst(int fd, sockaddr_storage* orig_addr) {
-  socklen_t addr_len = sizeof(sockaddr_storage);
+Address::InstancePtr Utility::getOriginalDst(int) {
+  ASSERT(false);
+  /*socklen_t addr_len = sizeof(sockaddr_storage);
   int status = getsockopt(fd, SOL_IP, SO_ORIGINAL_DST, orig_addr, &addr_len);
 
-  return (status == 0);
+  return (status == 0);*/
 }
 
 void Utility::parsePortRangeList(const std::string& string, std::list<PortRange>& list) {
@@ -259,13 +262,15 @@ void Utility::parsePortRangeList(const std::string& string, std::list<PortRange>
   }
 }
 
-bool Utility::portInRangeList(uint32_t port, const std::list<PortRange>& list) {
-  for (const Network::PortRange& p : list) {
+bool Utility::portInRangeList(const Address::Instance& , const std::list<PortRange>& ) {
+  ASSERT(false);
+
+  /*for (const Network::PortRange& p : list) {
     if (p.contains(port)) {
       return true;
     }
   }
-  return false;
+  return false;*/
 }
 
 } // Network

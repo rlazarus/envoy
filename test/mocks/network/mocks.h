@@ -51,8 +51,8 @@ public:
   MOCK_METHOD1(noDelay, void(bool enable));
   MOCK_METHOD1(readDisable, void(bool disable));
   MOCK_METHOD0(readEnabled, bool());
-  MOCK_METHOD0(remoteAddress, const std::string&());
-  MOCK_METHOD0(localAddress, const std::string&());
+  MOCK_METHOD0(remoteAddress, const Address::Instance&());
+  MOCK_METHOD0(localAddress, const Address::Instance*());
   MOCK_METHOD1(setBufferStats, void(const BufferStats& stats));
   MOCK_METHOD0(ssl, Ssl::Connection*());
   MOCK_METHOD0(state, State());
@@ -81,8 +81,8 @@ public:
   MOCK_METHOD1(noDelay, void(bool enable));
   MOCK_METHOD1(readDisable, void(bool disable));
   MOCK_METHOD0(readEnabled, bool());
-  MOCK_METHOD0(remoteAddress, const std::string&());
-  MOCK_METHOD0(localAddress, const std::string&());
+  MOCK_METHOD0(remoteAddress, const Address::Instance&());
+  MOCK_METHOD0(localAddress, const Address::Instance*());
   MOCK_METHOD1(setBufferStats, void(const BufferStats& stats));
   MOCK_METHOD0(ssl, Ssl::Connection*());
   MOCK_METHOD0(state, State());

@@ -99,7 +99,7 @@ void AsyncStreamImpl::encodeTrailers(HeaderMapPtr&& trailers) {
 
 void AsyncStreamImpl::sendHeaders(HeaderMap& headers, bool end_stream) {
   headers.insertEnvoyInternalRequest().value(Headers::get().EnvoyInternalRequestValues.True);
-  headers.insertForwardedFor().value(parent_.config_.local_info_.address());
+  //fixfixheaders.insertForwardedFor().value(parent_.config_.local_info_.address());
   router_.decodeHeaders(headers, end_stream);
   closeLocal(end_stream);
 }

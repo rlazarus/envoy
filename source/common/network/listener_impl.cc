@@ -14,17 +14,17 @@
 
 namespace Network {
 
-void ListenerImpl::listenCallback(evconnlistener*, evutil_socket_t fd, sockaddr* remote_addr, int,
-                                  void* arg) {
+void ListenerImpl::listenCallback(evconnlistener*, evutil_socket_t fd, sockaddr*, int, void* arg) {
   ListenerImpl* listener = static_cast<ListenerImpl*>(arg);
 
-  sockaddr_storage local_addr;
-  memset(&local_addr, 0, sizeof(local_addr));
+  // sockaddr_storage local_addr;
+  // fixfixmemset(&local_addr, 0, sizeof(local_addr));
 
-  bool success = Utility::getOriginalDst(fd, &local_addr);
+  Address::InstancePtr local_address = Utility::getOriginalDst(fd);
 
-  if (success && listener->use_original_dst_) {
-    std::string orig_sock_name =
+  if (local_address && listener->use_original_dst_) {
+    ASSERT(false);
+    /*std::string orig_sock_name =
         std::to_string(listener->getAddressPort(reinterpret_cast<struct sockaddr*>(&local_addr)));
 
     // A listener that has the use_original_dst flag set to true can still receive connections
@@ -38,10 +38,11 @@ void ListenerImpl::listenCallback(evconnlistener*, evutil_socket_t fd, sockaddr*
       if (new_listener != nullptr) {
         listener = new_listener;
       }
-    }
+    }*/
   }
 
-  listener->newConnection(fd, remote_addr, reinterpret_cast<struct sockaddr*>(&local_addr));
+  ASSERT(false);
+  listener->newConnection(fd, nullptr, local_address);
 }
 
 ListenerImpl::ListenerImpl(Network::ConnectionHandler& conn_handler,
@@ -70,8 +71,7 @@ void ListenerImpl::errorCallback(evconnlistener*, void*) {
   PANIC(fmt::format("listener accept failure: {}", strerror(errno)));
 }
 
-void ListenerImpl::newConnection(int fd, sockaddr* remote_addr, sockaddr* local_addr) {
-  evutil_make_socket_nonblocking(fd);
+/*void ListenerImpl::newConnection(int fd, sockaddr* remote_addr, sockaddr* local_addr) {
   if (use_proxy_proto_) {
     proxy_protocol_.newConnection(dispatcher_, fd, *this);
   } else {
@@ -79,15 +79,15 @@ void ListenerImpl::newConnection(int fd, sockaddr* remote_addr, sockaddr* local_
         fd, Network::Utility::urlForTcp(getAddressName(remote_addr), getAddressPort(remote_addr)),
         Network::Utility::urlForTcp(getAddressName(local_addr), getAddressPort(local_addr)));
   }
-}
+}*/
 
-void ListenerImpl::newConnection(int fd, const std::string& remote_address,
-                                 const std::string& local_address) {
+void ListenerImpl::newConnection(int fd, Address::InstancePtr remote_address,
+                                 Address::InstancePtr local_address) {
   ConnectionPtr new_connection(new ConnectionImpl(dispatcher_, fd, remote_address, local_address));
   cb_.onNewConnection(std::move(new_connection));
 }
 
-void SslListenerImpl::newConnection(int fd, sockaddr* remote_addr, sockaddr* local_addr) {
+/*void SslListenerImpl::newConnection(int fd, sockaddr* remote_addr, sockaddr* local_addr) {
   if (use_proxy_proto_) {
     proxy_protocol_.newConnection(dispatcher_, fd, *this);
   } else {
@@ -95,17 +95,17 @@ void SslListenerImpl::newConnection(int fd, sockaddr* remote_addr, sockaddr* loc
         fd, Network::Utility::urlForTcp(getAddressName(remote_addr), getAddressPort(remote_addr)),
         Network::Utility::urlForTcp(getAddressName(local_addr), getAddressPort(local_addr)));
   }
-}
+}*/
 
-void SslListenerImpl::newConnection(int fd, const std::string& remote_address,
-                                    const std::string& local_address) {
+void SslListenerImpl::newConnection(int fd, Address::InstancePtr remote_address,
+                                    Address::InstancePtr local_address) {
   ConnectionPtr new_connection(new Ssl::ConnectionImpl(dispatcher_, fd, remote_address,
                                                        local_address, ssl_ctx_,
                                                        Ssl::ConnectionImpl::InitialState::Server));
   cb_.onNewConnection(std::move(new_connection));
 }
 
-const std::string ListenerImpl::getAddressName(sockaddr* addr) {
+/*const std::string ListenerImpl::getAddressName(sockaddr* addr) {
   return (addr->sa_family == AF_INET)
              ? Utility::getAddressName(reinterpret_cast<sockaddr_in*>(addr))
              : EMPTY_STRING;
@@ -113,6 +113,6 @@ const std::string ListenerImpl::getAddressName(sockaddr* addr) {
 
 uint16_t ListenerImpl::getAddressPort(sockaddr* addr) {
   return (addr->sa_family == AF_INET) ? ntohs(reinterpret_cast<sockaddr_in*>(addr)->sin_port) : 0;
-}
+}*/
 
 } // Network

@@ -38,7 +38,7 @@ InstanceImpl::InstanceImpl(Options& options, TestHooks& hooks, HotRestart& resta
   }
   server_stats_.version_.set(version_int);
 
-  if (local_info_.address().empty()) {
+  if (!local_info_.address()) {
     throw EnvoyException("could not resolve local address");
   }
 

@@ -184,7 +184,7 @@ HttpFilterType HttpConnectionManagerConfig::stringToType(const std::string& type
   }
 }
 
-const std::string& HttpConnectionManagerConfig::localAddress() {
+Network::Address::InstancePtr HttpConnectionManagerConfig::localAddress() {
   return server_.localInfo().address();
 }
 

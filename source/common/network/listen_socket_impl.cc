@@ -7,8 +7,9 @@
 
 namespace Network {
 
-TcpListenSocket::TcpListenSocket(uint32_t port, bool bind_to_port) : port_(port) {
-  AddrInfoPtr address = Utility::resolveTCP("", port);
+TcpListenSocket::TcpListenSocket(uint32_t port, bool) : port_(port) {
+  ASSERT(false);
+  /*AddrInfoPtr address = Utility::resolveTCP("", port);
   fd_ = socket(address->ai_addr->sa_family, SOCK_STREAM | SOCK_NONBLOCK, 0);
   RELEASE_ASSERT(fd_ != -1);
 
@@ -22,11 +23,12 @@ TcpListenSocket::TcpListenSocket(uint32_t port, bool bind_to_port) : port_(port)
       close();
       throw EnvoyException(fmt::format("cannot bind on port {}: {}", port, strerror(errno)));
     }
-  }
+  }*/
 }
 
-UdsListenSocket::UdsListenSocket(const std::string& uds_path) {
-  remove(uds_path.c_str());
+UdsListenSocket::UdsListenSocket(const std::string&) {
+  ASSERT(false);
+  /*remove(uds_path.c_str());
   sockaddr_un address = Utility::resolveUnixDomainSocket(uds_path);
   fd_ = socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0);
   RELEASE_ASSERT(fd_ != -1);
@@ -36,7 +38,7 @@ UdsListenSocket::UdsListenSocket(const std::string& uds_path) {
     close();
     throw EnvoyException(
         fmt::format("cannot bind unix domain socket path {}: {}", uds_path, strerror(errno)));
-  }
+  }*/
 }
 
 } // Network

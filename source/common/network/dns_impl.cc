@@ -41,12 +41,12 @@ void DnsResolverImpl::onSignal() {
     PendingResolution* pending_resolution =
         reinterpret_cast<PendingResolution*>(signal_info.ssi_ptr);
 
-    std::list<std::string> address_list;
+    std::list<Address::InstancePtr> address_list;
     addrinfo* result = pending_resolution->async_cb_data_.ar_result;
     while (result != nullptr) {
       ASSERT(result->ai_family == AF_INET);
-      sockaddr_in* address = reinterpret_cast<sockaddr_in*>(result->ai_addr);
-      address_list.emplace_back(Network::Utility::getAddressName(address));
+      // sockaddr_in* address = reinterpret_cast<sockaddr_in*>(result->ai_addr);
+      ASSERT(false); // fixfixaddress_list.emplace_back(Network::Utility::getAddressName(address));
       result = result->ai_next;
     }
 

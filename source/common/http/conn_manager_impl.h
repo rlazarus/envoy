@@ -188,7 +188,7 @@ public:
    * @return local address.
    * Gives richer information in case of internal requests.
    */
-  virtual const std::string& localAddress() PURE;
+  virtual Network::Address::InstancePtr localAddress() PURE;
 
   /**
    * @return custom user agent for internal requests for better debugging. Must be configured to

@@ -22,17 +22,17 @@ namespace Upstream {
 Outlier::DetectorHostSinkNullImpl HostDescriptionImpl::null_outlier_detector_;
 
 Host::CreateConnectionData HostImpl::createConnection(Event::Dispatcher& dispatcher) const {
-  return {createConnection(dispatcher, *cluster_, url_), shared_from_this()};
+  return {createConnection(dispatcher, *cluster_, address_), shared_from_this()};
 }
 
 Network::ClientConnectionPtr HostImpl::createConnection(Event::Dispatcher& dispatcher,
                                                         const ClusterInfo& cluster,
-                                                        const std::string& url) {
+                                                        Network::Address::InstancePtr address) {
   if (cluster.sslContext()) {
     return Network::ClientConnectionPtr{
-        dispatcher.createSslClientConnection(*cluster.sslContext(), url)};
+        dispatcher.createSslClientConnection(*cluster.sslContext(), address)};
   } else {
-    return Network::ClientConnectionPtr{dispatcher.createClientConnection(url)};
+    return Network::ClientConnectionPtr{dispatcher.createClientConnection(address)};
   }
 }
 
@@ -262,8 +262,9 @@ StaticClusterImpl::StaticClusterImpl(const Json::Object& config, Runtime::Loader
   for (Json::ObjectPtr& host : hosts_json) {
     std::string url = host->getString("url");
     // resolve the URL to make sure it's valid
-    Network::Utility::resolve(url);
-    new_hosts->emplace_back(HostPtr{new HostImpl(info_, url, false, 1, "")});
+    //Network::Utility::resolve(url);
+    //new_hosts->emplace_back(HostPtr{new HostImpl(info_, url, false, 1, "")});
+    ASSERT(false);
   }
 
   updateHosts(new_hosts, createHealthyHostList(*new_hosts), empty_host_lists_, empty_host_lists_,
@@ -286,7 +287,7 @@ bool BaseDynamicClusterImpl::updateDynamicHostList(const std::vector<HostPtr>& n
     for (auto i = current_hosts.begin(); i != current_hosts.end();) {
       // If we find a host matched based on URL, we keep it. However we do change weight inline so
       // do that here.
-      if ((*i)->url() == host->url()) {
+      if (*(*i)->address() == *host->address()) {
         if (host->weight() > max_host_weight) {
           max_host_weight = host->weight();
         }
@@ -374,9 +375,9 @@ void StrictDnsClusterImpl::updateAllHosts(const std::vector<HostPtr>& hosts_adde
 
 StrictDnsClusterImpl::ResolveTarget::ResolveTarget(StrictDnsClusterImpl& parent,
                                                    Event::Dispatcher& dispatcher,
-                                                   const std::string& url)
-    : parent_(parent), dns_address_(Network::Utility::hostFromUrl(url)),
-      port_(Network::Utility::portFromUrl(url)),
+                                                   const std::string& )
+    : parent_(parent), //dns_address_(Network::Utility::hostFromUrl(url)),
+      //port_(Network::Utility::portFromUrl(url)),
       resolve_timer_(dispatcher.createTimer([this]() -> void { startResolve(); })) {
 
   startResolve();
@@ -389,7 +390,8 @@ StrictDnsClusterImpl::ResolveTarget::~ResolveTarget() {
 }
 
 void StrictDnsClusterImpl::ResolveTarget::startResolve() {
-  log_debug("starting async DNS resolution for {}", dns_address_);
+  ASSERT(false);
+  /*log_debug("starting async DNS resolution for {}", dns_address_);
   parent_.info_->stats().update_attempt_.inc();
 
   active_query_ = &parent_.dns_resolver_.resolve(
@@ -400,6 +402,7 @@ void StrictDnsClusterImpl::ResolveTarget::startResolve() {
 
         std::vector<HostPtr> new_hosts;
         for (const std::string& address : address_list) {
+          ASSERT(false);
           new_hosts.emplace_back(new HostImpl(
               parent_.info_, Network::Utility::urlForTcp(address, port_), false, 1, ""));
         }
@@ -421,10 +424,10 @@ void StrictDnsClusterImpl::ResolveTarget::startResolve() {
         }
 
         resolve_timer_->enableTimer(parent_.dns_refresh_rate_ms_);
-      });
+      });*/
 }
 
-void HostDescriptionImpl::checkUrl() {
+/*void HostDescriptionImpl::checkUrl() {
   if (url_.find(Network::Utility::TCP_SCHEME) == 0) {
     Network::Utility::hostFromUrl(url_);
     Network::Utility::portFromUrl(url_);
@@ -433,6 +436,6 @@ void HostDescriptionImpl::checkUrl() {
   } else {
     throw EnvoyException(fmt::format("malformed url: {}", url_));
   }
-}
+}*/
 
 } // Upstream

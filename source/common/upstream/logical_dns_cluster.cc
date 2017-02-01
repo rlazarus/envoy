@@ -20,8 +20,8 @@ LogicalDnsCluster::LogicalDnsCluster(const Json::Object& config, Runtime::Loader
   }
 
   dns_url_ = hosts_json[0]->getString("url");
-  Network::Utility::hostFromUrl(dns_url_);
-  Network::Utility::portFromUrl(dns_url_);
+  //Network::Utility::hostFromUrl(dns_url_);
+  //fixfixNetwork::Utility::portFromUrl(dns_url_);
   startResolve();
 
   tls.set(tls_slot_, [](Event::Dispatcher&) -> ThreadLocal::ThreadLocalObjectPtr {
@@ -36,7 +36,8 @@ LogicalDnsCluster::~LogicalDnsCluster() {
 }
 
 void LogicalDnsCluster::startResolve() {
-  std::string dns_address = Network::Utility::hostFromUrl(dns_url_);
+  ASSERT(false);
+  /*std::string dns_address = Network::Utility::hostFromUrl(dns_url_);
   log_debug("starting async DNS resolution for {}", dns_address);
   info_->stats().update_attempt_.inc();
 
@@ -72,14 +73,14 @@ void LogicalDnsCluster::startResolve() {
         }
 
         resolve_timer_->enableTimer(dns_refresh_rate_ms_);
-      });
+      });*/
 }
 
 Upstream::Host::CreateConnectionData
 LogicalDnsCluster::LogicalHost::createConnection(Event::Dispatcher& dispatcher) const {
   PerThreadCurrentHostData& data =
       parent_.tls_.getTyped<PerThreadCurrentHostData>(parent_.tls_slot_);
-  ASSERT(!data.current_resolved_url_.empty());
+  ASSERT(data.current_resolved_url_);
   return {
       HostImpl::createConnection(dispatcher, *parent_.info_, data.current_resolved_url_),
       HostDescriptionPtr{new RealHostDescription(data.current_resolved_url_, shared_from_this())}};

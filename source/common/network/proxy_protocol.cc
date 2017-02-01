@@ -72,7 +72,9 @@ void ProxyProtocol::ActiveConnection::onReadWorker() {
   removeFromList(parent_.connections_);
 
   // TODO: pass in something more meaningful than 0 as remote port and EMPTY_STRING as local_address
-  listener.newConnection(fd, Network::Utility::urlForTcp(remote_address, 0), EMPTY_STRING);
+  // fixfix
+  ASSERT(false);
+  listener.newConnection(fd, nullptr, nullptr);
 }
 
 void ProxyProtocol::ActiveConnection::close() {

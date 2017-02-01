@@ -37,8 +37,8 @@ class ConnectionImpl : public virtual Connection,
                        public BufferSource,
                        protected Logger::Loggable<Logger::Id::connection> {
 public:
-  ConnectionImpl(Event::DispatcherImpl& dispatcher, int fd, const std::string& remote_address,
-                 const std::string& local_address);
+  ConnectionImpl(Event::DispatcherImpl& dispatcher, int fd, Address::InstancePtr remote_address,
+                 Address::InstancePtr local_address);
 
   ~ConnectionImpl();
 
@@ -57,8 +57,8 @@ public:
   void noDelay(bool enable) override;
   void readDisable(bool disable) override;
   bool readEnabled() override;
-  const std::string& remoteAddress() override { return remote_address_; }
-  const std::string& localAddress() override { return local_address_; }
+  const Address::Instance& remoteAddress() override;
+  const Address::Instance* localAddress() override;
   void setBufferStats(const BufferStats& stats) override;
   Ssl::Connection* ssl() override { return nullptr; }
   State state() override;
@@ -81,8 +81,8 @@ protected:
   void raiseEvents(uint32_t events);
 
   FilterManagerImpl filter_manager_;
-  const std::string remote_address_;
-  const std::string local_address_;
+  Address::InstancePtr remote_address_;
+  Address::InstancePtr local_address_;
   Buffer::OwnedImpl read_buffer_;
   Buffer::OwnedImpl write_buffer_;
 
@@ -126,15 +126,15 @@ private:
  */
 class ClientConnectionImpl : public ConnectionImpl, virtual public ClientConnection {
 public:
-  ClientConnectionImpl(Event::DispatcherImpl& dispatcher, int fd, const std::string& url);
+  ClientConnectionImpl(Event::DispatcherImpl& dispatcher, int fd, Address::InstancePtr address);
 
   static Network::ClientConnectionPtr create(Event::DispatcherImpl& dispatcher,
-                                             const std::string& url);
+                                             Address::InstancePtr address);
 };
 
-class TcpClientConnectionImpl : public ClientConnectionImpl {
+/*class TcpClientConnectionImpl : public ClientConnectionImpl {
 public:
-  TcpClientConnectionImpl(Event::DispatcherImpl& dispatcher, const std::string& url);
+  TcpClientConnectionImpl(Event::DispatcherImpl& dispatcher, const Address::Instance& address);
 
   // Network::ClientConnection
   void connect() override;
@@ -142,10 +142,10 @@ public:
 
 class UdsClientConnectionImpl final : public ClientConnectionImpl {
 public:
-  UdsClientConnectionImpl(Event::DispatcherImpl& dispatcher, const std::string& url);
+  UdsClientConnectionImpl(Event::DispatcherImpl& dispatcher, const Address::Instance& address);
 
   // Network::ClientConnection
   void connect() override;
-};
+};*/
 
 } // Network

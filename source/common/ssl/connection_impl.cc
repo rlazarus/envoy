@@ -10,8 +10,9 @@
 namespace Ssl {
 
 ConnectionImpl::ConnectionImpl(Event::DispatcherImpl& dispatcher, int fd,
-                               const std::string& remote_address, const std::string& local_address,
-                               Context& ctx, InitialState state)
+                               Network::Address::InstancePtr remote_address,
+                               Network::Address::InstancePtr local_address, Context& ctx,
+                               InitialState state)
     : Network::ConnectionImpl(dispatcher, fd, remote_address, local_address),
       ctx_(dynamic_cast<Ssl::ContextImpl&>(ctx)), ssl_(ctx_.newSsl()) {
   BIO* bio = BIO_new_socket(fd, 0);
@@ -186,17 +187,18 @@ std::string ConnectionImpl::sha256PeerCertificateDigest() {
   return Hex::encode(computed_hash);
 }
 
-// TODO: see if we can pass something more meaningful than EMPTY_STRING as localAddress
+// TODO: see if we can pass something more meaningful than nullptr as localAddress
 ClientConnectionImpl::ClientConnectionImpl(Event::DispatcherImpl& dispatcher, Context& ctx,
-                                           const std::string& url)
-    : ConnectionImpl(dispatcher, socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0), url, EMPTY_STRING,
+                                           Network::Address::InstancePtr address)
+    : ConnectionImpl(dispatcher, socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0), address, nullptr,
                      ctx, InitialState::Client) {}
 
 void ClientConnectionImpl::connect() {
-  Network::AddrInfoPtr addr_info =
+  /*Network::AddrInfoPtr addr_info =
       Network::Utility::resolveTCP(Network::Utility::hostFromUrl(remote_address_),
                                    Network::Utility::portFromUrl(remote_address_));
-  doConnect(addr_info->ai_addr, addr_info->ai_addrlen);
+  doConnect(addr_info->ai_addr, addr_info->ai_addrlen);*/
+  ASSERT(false);
 }
 
 void ConnectionImpl::closeSocket(uint32_t close_type) {

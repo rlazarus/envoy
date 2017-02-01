@@ -34,7 +34,8 @@ void ConnectionImplUtility::updateBufferStats(uint64_t delta, uint64_t new_total
 std::atomic<uint64_t> ConnectionImpl::next_global_id_;
 
 ConnectionImpl::ConnectionImpl(Event::DispatcherImpl& dispatcher, int fd,
-                               const std::string& remote_address, const std::string& local_address)
+                               Address::InstancePtr remote_address,
+                               Address::InstancePtr local_address)
     : filter_manager_(*this, *this), remote_address_(remote_address), local_address_(local_address),
       dispatcher_(dispatcher), fd_(fd), id_(++next_global_id_) {
 
@@ -396,24 +397,25 @@ void ConnectionImpl::updateWriteBufferStats(uint64_t num_written, uint64_t new_s
                                            buffer_stats_->write_current_);
 }
 
-// TODO: see if we can pass something more meaningful than EMPTY_STRING as localAddress
+// fixfix
 ClientConnectionImpl::ClientConnectionImpl(Event::DispatcherImpl& dispatcher, int fd,
-                                           const std::string& url)
-    : ConnectionImpl(dispatcher, fd, url, EMPTY_STRING) {}
+                                           Address::InstancePtr address)
+    : ConnectionImpl(dispatcher, fd, address, address) {}
 
-Network::ClientConnectionPtr ClientConnectionImpl::create(Event::DispatcherImpl& dispatcher,
-                                                          const std::string& url) {
-  if (url.find(Network::Utility::TCP_SCHEME) == 0) {
+Network::ClientConnectionPtr ClientConnectionImpl::create(Event::DispatcherImpl&,
+                                                          Address::InstancePtr) {
+  /*if (url.find(Network::Utility::TCP_SCHEME) == 0) {
     return Network::ClientConnectionPtr{new Network::TcpClientConnectionImpl(dispatcher, url)};
   } else if (url.find(Network::Utility::UNIX_SCHEME) == 0) {
     return Network::ClientConnectionPtr{new Network::UdsClientConnectionImpl(dispatcher, url)};
   } else {
     throw EnvoyException(fmt::format("malformed url: {}", url));
-  }
+  }*/
+  ASSERT(false);
 }
 
-TcpClientConnectionImpl::TcpClientConnectionImpl(Event::DispatcherImpl& dispatcher,
-                                                 const std::string& url)
+/*TcpClientConnectionImpl::TcpClientConnectionImpl(Event::DispatcherImpl& dispatcher,
+                                                 const Address::Instance& address)
     : ClientConnectionImpl(dispatcher, socket(AF_INET, SOCK_STREAM | SOCK_NONBLOCK, 0), url) {}
 
 void TcpClientConnectionImpl::connect() {
@@ -429,6 +431,6 @@ UdsClientConnectionImpl::UdsClientConnectionImpl(Event::DispatcherImpl& dispatch
 void UdsClientConnectionImpl::connect() {
   sockaddr_un addr = Utility::resolveUnixDomainSocket(Utility::pathFromUrl(remote_address_));
   doConnect(reinterpret_cast<sockaddr*>(&addr), sizeof(sockaddr_un));
-}
+}*/
 
 } // Network

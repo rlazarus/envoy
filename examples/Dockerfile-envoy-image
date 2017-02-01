@@ -4,3 +4,6 @@ ADD build/source/exe/envoy /usr/local/bin/envoy
 RUN apt-get update && apt-get install -y \
     curl \
     python-pip
+RUN objcopy --only-keep-debug /usr/local/bin/envoy /usr/local/bin/envoy.dbg
+RUN strip /usr/local/bin/envoy
+RUN objcopy --add-gnu-debuglink=/usr/local/bin/envoy.dbg /usr/local/bin/envoy

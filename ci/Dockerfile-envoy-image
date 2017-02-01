@@ -1,0 +1,4 @@
+FROM ubuntu:14.04
+
+ADD build/source/exe/envoy /usr/local/bin/envoy
+RUN strip /usr/local/bin/envoy

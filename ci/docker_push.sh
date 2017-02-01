@@ -10,7 +10,7 @@ do
 done
 if [ ("$TRAVIS_PULL_REQUEST" == "false" -a "$want_push" == "true") -a "$TEST_TYPE" == "normal" ]
 then
-    docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+    # docker login -e $DOCKER_EMAIL -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
     export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH; fi`
     echo "TAG is $TAG"
     docker build -f ci/Dockerfile-envoy-image -t lyft/envoy:$TAG

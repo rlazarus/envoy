@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ev
 want_push='false'
 for branch in "master" "1.0.0" "1.1.0"
 do
